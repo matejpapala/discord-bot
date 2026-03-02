@@ -11,6 +11,10 @@ const commands = [
     {
         name: 'ahoj',
         description: 'Pavel te pozdravi'
+    },
+    {
+        name: 'dobrounoc',
+        description: 'Pavel ti popreje dobrou noc'
     }
 ];
 
@@ -18,20 +22,26 @@ client.once('clientReady', async () => {
     console.log(`🟢 Žije to! Pavel (${client.user.tag}) je online!`);
 
     try {
-        console.log('🔄 Registruji lomítkové příkazy...');
-        // Odeslání příkazů Discordu (aby ti to napovídalo, když napíšeš /)
         await client.application.commands.set(commands);
-        console.log('✅ Příkazy úspěšně zaregistrovány!');
+        console.log('Commands loaded');
     } catch (error) {
-        console.error('❌ Chyba při registraci příkazů:', error);
+        console.error('Chyba při registraci příkazů:', error);
     }
 });
 
-client.on('interactionCreate', async interatction => {
-    if (!interatction.isChatInputCommand()) return;
+client.on('interactionCreate', async interaction => {
+    if (!interaction.isChatInputCommand()) return;
 
-    if (interatction.commandName == 'ahoj') {
-        await interatction.reply(`Ahoj ${interatction.user}`);
+    if (interaction.commandName == 'ahoj') {
+        await interaction.reply(`Ahoj ${interaction.user}`);
+    }
+
+    if (interaction.commandName == 'dobrounoc') {
+        if (interaction.user.id == '391508206662320139') {
+            await interaction.reply(`Spatnou noc ${interaction.user}`);
+        } else {
+            await interaction.reply(`Dobrou noc ${interaction.user}`);
+        }
     }
 });
 

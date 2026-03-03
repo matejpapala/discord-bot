@@ -143,9 +143,9 @@ module.exports = {
             if (isFull) {
                 const pings = currentPlayers.map(p => p.toString()).join(' ');
                 await interaction.channel.send(`Skupina pro ${finalGameName} je full! Ready up: ${pings}`);
-            }
 
-            collector.stop();
+                collector.stop();
+            }
         });
     }
 };

@@ -1,4 +1,4 @@
-const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, Collector } = require('discord.js');
+const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, MessageFlags } = require('discord.js');
 
 module.exports = {
     data: {
@@ -35,6 +35,7 @@ module.exports = {
             'r6': { name: 'Rainbow Six Siege', players: 5 },
             'tft': { name: 'Teamfight Tactics', players: 3 },
             'teamfight tactics': { name: 'Teamfight Tactics', players: 3 },
+            'test': { name: 'Testovaci hra', players: 2 }
         };
 
         const normalizedGame = gameInput.toLowerCase();
@@ -48,7 +49,7 @@ module.exports = {
         }
 
         if (!playerCount) {
-            return await interaction.reply({ content: 'Tuhle hru neznam, zadej pocet hracu', ephemeral: true });
+            return await interaction.reply({ content: 'Tuhle hru neznam, zadej pocet hracu', flags: MessageFlags.Ephemeral });
         }
 
         let currentPlayers = [interaction.user];
@@ -70,7 +71,7 @@ module.exports = {
             .setTitle(`Hledaji se hraci na ${finalGameName}`)
             .setDescription(`${interaction.user} hleda ${playerCount} hracu pro hru ${finalGameName}`)
             .addFields(
-                { name: 'Prihlaseni hraci:', value: `1. ${interaction.user.username}\n2. Volne misto` }
+                { name: 'Prihlaseni hraci:', value: generatePlayersText() }
             )
             .setTimestamp()
             .setFooter({ text: 'Pavel LFG' });
@@ -87,34 +88,64 @@ module.exports = {
 
         const actionRow = new ActionRowBuilder().addComponents(joinButton, leaveButton);
 
-        const message = await interaction.reply({ embeds: [lfgEmbed], components: [actionRow], fetchReply: true });
+        const response = await interaction.reply({ embeds: [lfgEmbed], components: [actionRow], withResponse: true });
+
+        const message = response.resource.message;
 
         const collector = message.createMessageComponentCollector({ time: 3600000 });
 
         collector.on('collect', async i => {
             if (i.customId === 'join_lfg') {
                 if (currentPlayers.length >= playerCount) {
-                    return await i.reply({ content: 'Skupina je uz plna!', ephemeral: true });
+                    return await i.reply({ content: 'Skupina je uz plna!', flags: MessageFlags.Ephemeral });
                 }
                 if (currentPlayers.find(p => p.id === i.user.id)) {
-                    return await i.reply({ content: 'Jsi uz v skupine!', ephemeral: true });
+                    return await i.reply({ content: 'Jsi uz ve skupine!', flags: MessageFlags.Ephemeral });
                 }
-                players.push(i.user);
+                currentPlayers.push(i.user);
             }
             if (i.customId === 'leave_lfg') {
                 if (!currentPlayers.find(p => p.id === i.user.id)) {
-                    return await i.reply({ content: 'Nejsi v skupine!', ephemeral: true });
+                    return await i.reply({ content: 'Nejsi v skupine!', flags: MessageFlags.Ephemeral });
                 }
                 if (i.user.id === interaction.user.id && currentPlayers.length == 1) {
-                    return await i.reply({ content: 'Nemuzes opustit skupinu, jsi jediny hrac!', ephemeral: true });
+                    return await i.reply({ content: 'Nemuzes opustit skupinu, jsi jediny hrac!', flags: MessageFlags.Ephemeral });
                 }
-                players = currentPlayers.filter(p => p.id !== i.user.id);
+                currentPlayers = currentPlayers.filter(p => p.id !== i.user.id);
             }
+
+            const isFull = currentPlayers.length >= playerCount;
+
+            const updatedJoinButton = new ButtonBuilder()
+                .setCustomId('join_lfg')
+                .setLabel('Pridat se')
+                .setStyle(ButtonStyle.Success)
+                .setDisabled(isFull);
+
+            const updatedLeaveButton = new ButtonBuilder()
+                .setCustomId('leave_lfg')
+                .setLabel('Odejit')
+                .setStyle(ButtonStyle.Danger)
+                .setDisabled(isFull);
+
+            const updatedActionRow = new ActionRowBuilder().addComponents(updatedJoinButton, updatedLeaveButton);
 
             const updatedEmbed = EmbedBuilder.from(message.embeds[0])
                 .spliceFields(0, 1, { name: 'Prihlaseni hraci:', value: generatePlayersText() });
 
-            await i.update({ embeds: [updatedEmbed] });
+
+            if (isFull) {
+                updatedEmbed.setColor('#00ff00').setTitle(`Skupina pro ${finalGameName} je plna!`);
+            }
+
+            await i.update({ embeds: [updatedEmbed], components: [updatedActionRow] });
+
+            if (isFull) {
+                const pings = currentPlayers.map(p => p.toString()).join(' ');
+                await interaction.channel.send(`Skupina pro ${finalGameName} je full! Ready up: ${pings}`);
+            }
+
+            collector.stop();
         });
     }
 };

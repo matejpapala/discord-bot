@@ -1,6 +1,6 @@
 const { AttachmentBuilder } = require('discord.js');
-const fs = require('fs'); // Modul pro čtení disku
-const path = require('path'); // Modul pro skládání cest ke složkám
+const fs = require('fs');
+const path = require('path');
 
 module.exports = {
     data: {

@@ -88,7 +88,7 @@ module.exports = {
 
         const actionRow = new ActionRowBuilder().addComponents(joinButton, leaveButton);
 
-        const response = await interaction.reply({ embeds: [lfgEmbed], components: [actionRow], withResponse: true });
+        const response = await interaction.reply({ content: `@everyone`, embeds: [lfgEmbed], components: [actionRow], withResponse: true, allowedMentions: { parse: ['everyone'] } });
 
         const message = response.resource.message;
 

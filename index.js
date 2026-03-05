@@ -24,7 +24,7 @@ for (const file of commandFiles) {
     }
 }
 
-client.once('clientReady', async interaction => {
+client.once('clientReady', async () => {
     console.log('Pavel is ready');
     try {
         await client.application.commands.set(commandsData);

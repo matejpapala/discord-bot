@@ -3,6 +3,8 @@ const { Client, GatewayIntentBits, Collection } = require('discord.js');
 
 const fs = require('fs');
 const path = require('path');
+// eslint-disable-next-line no-unused-vars
+const db = require('./database.js');
 
 const client = new Client({
     intents: [GatewayIntentBits.Guilds]
@@ -12,13 +14,21 @@ client.commands = new Collection();
 const commandsData = [];
 
 const commandsPath = path.join(__dirname, 'commands');
-const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
+const commandItems = fs.readdirSync(commandsPath);
 
-for (const file of commandFiles) {
-    const filePath = path.join(commandsPath, file);
-    const command = require(filePath);
+for (const item of commandItems) {
+    const itemPath = path.join(commandsPath, item);
 
-    if ('data' in command && 'execute' in command) {
+    if (fs.statSync(itemPath).isDirectory()) {
+        const commandFiles = fs.readdirSync(itemPath).filter(file => file.endsWith('.js'));
+        for (const file of commandFiles) {
+            const filePath = path.join(itemPath, file);
+            const command = require(filePath);
+            client.commands.set(command.data.name, command);
+            commandsData.push(command.data);
+        }
+    } else if (item.endsWith('.js')) {
+        const command = require(itemPath);
         client.commands.set(command.data.name, command);
         commandsData.push(command.data);
     }

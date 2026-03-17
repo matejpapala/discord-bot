@@ -10,7 +10,7 @@ module.exports = {
         await interaction.deferReply();
 
         const apiKey = process.env.FOOTBALL_API_KEY;
-        const teamId = 653;
+        const teamId = 3713;
 
         if (!apiKey) {
             return await interaction.editReply('Nemas nastaveny FOOTBALL_API_KEY v .env souboru!');
@@ -30,7 +30,7 @@ module.exports = {
             const banikEmbed = new EmbedBuilder()
                 .setColor('#00529b')
                 .setTitle('FC Banik Ostrava - Prehled zapasu')
-                .setThumbnail('https://media.api-sports.io/football/teams/653.png')
+                .setThumbnail(`https://media.api-sports.io/football/teams/${teamId}.png`)
                 .setTimestamp();
 
             let lastMatchesText = '';

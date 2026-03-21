@@ -84,5 +84,12 @@ module.exports = {
             .setDescription(`\n**[ ${symbolMap[reel1]} | ${symbolMap[reel2]} | ${symbolMap[reel3]} ]**\n\n${resultText}\nNovy zustatek: **${updatedUser.balance}** minci`);
 
         await interaction.editReply({ embeds: [finalEmbed] });
+
+        setTimeout(async () => {
+            try {
+                await interaction.deleteReply();
+            } catch (error) {
+            }
+        }, 150000);
     }
 };

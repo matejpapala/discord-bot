@@ -54,7 +54,7 @@ module.exports = {
             else win = bet * 10;
             resultText = `**JACKPOT!** Trikrat stejny symbol! ${interaction.user} vyhrava **${win}** minci!`;
         } else if (reel1 === reel2 || reel2 === reel3 || reel1 === reel3) {
-            win = round(bet * 1.1);
+            win = Math.round(bet * 1.1);
             resultText = `**Mala vyhra!** Dva stejne symboly. ${interaction.user} vyhrava **${win}** minci.`;
         } else {
             resultText = `**PROHRA** ${interaction.user} progamblil **${bet}** minci.`;

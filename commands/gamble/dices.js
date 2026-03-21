@@ -95,5 +95,12 @@ module.exports = {
                 await interaction.followUp({ content: 'Dlouho ses nerozhodl, sazka se nuluje', flags: MessageFlags.Ephemeral });
             }
         });
+
+        setTimeout(async () => {
+            try {
+                await interaction.deleteReply();
+            } catch (error) {
+            }
+        }, 150000);
     }
 }

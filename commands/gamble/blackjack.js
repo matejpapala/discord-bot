@@ -172,5 +172,12 @@ module.exports = {
             await interaction.deleteReply();
             await interaction.channel.send({ embeds: [resultEmbed] });
         });
+
+        setTimeout(async () => {
+            try {
+                await interaction.deleteReply();
+            } catch (error) {
+            }
+        }, 150000);
     }
 };

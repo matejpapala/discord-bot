@@ -121,11 +121,13 @@ module.exports = {
 
       await interaction.editReply({ embeds: [instantEmbed] });
 
-      setTimeout(async () => {
-        try {
-          await interaction.deleteReply();
-        } catch (error) {}
-      }, 15000);
+      if (interaction.channelId !== GAMLE_CHANNEL_ID) {
+        setTimeout(async () => {
+          try {
+            await interaction.deleteReply();
+          } catch (error) {}
+        }, 15000);
+      }
       return;
     }
 
@@ -151,10 +153,9 @@ module.exports = {
         },
       );
 
-    const response = await interaction.reply({
+    const response = await interaction.editReply({
       embeds: [embed],
-      components: [row],
-      flags: MessageFlags.Ephemeral,
+      components: [row]
     });
 
     const collector = response.createMessageComponentCollector({
@@ -205,9 +206,7 @@ module.exports = {
       }
 
       let win = 0;
-      // eslint-disable-next-line no-useless-assignment
       let resultText = "";
-      // eslint-disable-next-line no-useless-assignment
       let finalColor = "#2e8b57";
 
       if (reason === "bust") {
@@ -249,29 +248,4 @@ module.exports = {
       const resultEmbed = new EmbedBuilder()
         .setColor(finalColor)
         .setTitle("Vysledek Blackjacku")
-        .setDescription(`${resultText}\nNovy zustatek: **${updatedUser.balance}** minci`)
-        .addFields(
-          {
-            name: `Tvoje karty (Skore: ${playerScore})`,
-            value: playerCards.map((c) => c.name).join(" | "),
-            inline: true,
-          },
-          {
-            name: `Karty dealera (Skore: ${dealerScore})`,
-            value: dealerCards.map((c) => c.name).join(" | "),
-            inline: true,
-          },
-        );
-
-      await interaction.deleteReply();
-      await interaction.channel.send({ embeds: [resultEmbed] });
-    });
-    if (interaction.channelId !== GAMLE_CHANNEL_ID) {
-      setTimeout(async () => {
-        try {
-          await interaction.deleteReply();
-        } catch (error) {}
-      }, 15000);
-    }
-  },
-};
+        .setDescription(`${resultText}\nNovy zustatek: **${updatedUser.balance}**

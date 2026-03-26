@@ -155,7 +155,7 @@ module.exports = {
 
     const response = await interaction.editReply({
       embeds: [embed],
-      components: [row]
+      components: [row],
     });
 
     const collector = response.createMessageComponentCollector({
@@ -248,4 +248,31 @@ module.exports = {
       const resultEmbed = new EmbedBuilder()
         .setColor(finalColor)
         .setTitle("Vysledek Blackjacku")
-        .setDescription(`${resultText}\nNovy zustatek: **${updatedUser.balance}**
+        .setDescription(`${resultText}\nNovy zustatek: **${updatedUser.balance}** minci`)
+        .addFields(
+          {
+            name: `Tvoje karty (Skore: ${playerScore})`,
+            value: playerCards.map((c) => c.name).join(" | "),
+            inline: true,
+          },
+          {
+            name: `Karty dealera (Skore: ${dealerScore})`,
+            value: dealerCards.map((c) => c.name).join(" | "),
+            inline: true,
+          },
+        );
+
+      await interaction.deleteReply();
+
+      const finalMessage = await interaction.channel.send({ embeds: [resultEmbed] });
+
+      if (interaction.channelId !== GAMLE_CHANNEL_ID) {
+        setTimeout(async () => {
+          try {
+            await finalMessage.delete();
+          } catch (error) {}
+        }, 15000);
+      }
+    });
+  },
+};

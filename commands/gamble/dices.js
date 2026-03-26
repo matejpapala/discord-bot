@@ -1,5 +1,7 @@
 const db = require("../../database.js");
-const { EmbedBuilder, ButtonBuilder, ButtonStyle, ActionRowBuilder, MessageFlags } = require("discord.js");
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags } = require("discord.js");
+
+const GAMLE_CHANNEL_ID = "1486436223189782568"; 
 
 module.exports = {
   data: {
@@ -32,13 +34,15 @@ module.exports = {
       return await interaction.reply({ content: "Nemas dostatecny balance", flags: MessageFlags.Ephemeral });
     }
 
+    await interaction.deferReply();
+
     const newBalance = user.balance - bet;
     db.prepare("UPDATE users SET balance = ? WHERE user_id = ?").run(newBalance, userId);
 
     const dicesEmbed = new EmbedBuilder()
       .setColor("#FFA500")
       .setTitle("Hod kostkami")
-      .setDescription(`Vsadil jsi ${bet} minci\nNa co tipnes ze padne soucet dvou kostek?`);
+      .setDescription(`Vsadil jsi **${bet}** minci\nNa co tipnes ze padne soucet dvou kostek?`);
 
     const row = new ActionRowBuilder().addComponents(
       new ButtonBuilder().setCustomId("less_than_7").setLabel("Pod 7 (Vyhra 2x)").setStyle(ButtonStyle.Primary),
@@ -46,7 +50,7 @@ module.exports = {
       new ButtonBuilder().setCustomId("more_than_7").setLabel("Vice nez 7 (Vyhra 2x)").setStyle(ButtonStyle.Danger),
     );
 
-    const response = await interaction.reply({ embeds: [dicesEmbed], components: [row], flags: MessageFlags.Ephemeral });
+    const response = await interaction.editReply({ embeds: [dicesEmbed], components: [row] });
 
     const collector = response.createMessageComponentCollector({ time: 60000 });
 
@@ -56,7 +60,6 @@ module.exports = {
       const sum = diceOne + diceTwo;
 
       let win = 0;
-      // eslint-disable-next-line no-useless-assignment
       let winText = "";
 
       if (i.customId === "less_than_7" && sum < 7) win = bet * 2;
@@ -65,12 +68,14 @@ module.exports = {
 
       if (win > 0) {
         db.prepare("UPDATE users SET balance = balance + ?, total_gambled = total_gambled + ? WHERE user_id = ?").run(win, win, userId);
-        winText = `**!!VYHRA!!** ${interaction.user} vyhrava ${win} minci`;
-        if (win > user.biggest_win) {
+        winText = `**!!VYHRA!!** ${interaction.user} vyhrava **${win}** minci`;
+        
+        const currentBiggest = user.biggest_win || 0;
+        if (win > currentBiggest) {
           db.prepare("UPDATE users SET biggest_win = ? WHERE user_id = ?").run(win, userId);
         }
       } else {
-        winText = `**PROHRA** ${interaction.user} progamblil **${bet}**`;
+        winText = `**PROHRA** ${interaction.user} progamblil **${bet}** minci`;
       }
 
       const updatedUser = db.prepare("SELECT balance FROM users WHERE user_id = ?").get(userId);
@@ -79,33 +84,31 @@ module.exports = {
         .setColor(win > 0 ? "#00FF00" : "#FF0000")
         .setTitle("Vysledek hodu")
         .setDescription(
-          `Kostky: **${diceOne}** a **${diceTwo}** (Součet: **${sum}**)\n\n${winText}\n Nový zůstatek: **${updatedUser.balance}**`,
+          `Kostky: **${diceOne}** a **${diceTwo}** (Součet: **${sum}**)\n\n${winText}\nNový zůstatek: **${updatedUser.balance}** mincí`,
         );
 
       await i.deferUpdate();
-
       await interaction.deleteReply();
 
-      await interaction.channel.send({ embeds: [resultEmbed] });
+      const finalMessage = await interaction.channel.send({ embeds: [resultEmbed] });
 
-      collector.stop();
+      if (interaction.channelId !== GAMLE_CHANNEL_ID) {
+        setTimeout(async () => {
+          try {
+            await finalMessage.delete();
+          } catch (error) {}
+        }, 15000);
+      }
+
+      collector.stop("played");
     });
 
     collector.on("end", async (collected, reason) => {
-      if (reason == "time") {
+      if (reason === "time") {
         db.prepare("UPDATE users SET balance = balance + ? WHERE user_id = ?").run(bet, userId);
-
         await interaction.deleteReply();
-        await interaction.followUp({ content: "Dlouho ses nerozhodl, sazka se nuluje", flags: MessageFlags.Ephemeral });
+        await interaction.followUp({ content: "Dlouho ses nerozhodl, sazka se vraci.", flags: MessageFlags.Ephemeral });
       }
     });
-
-    if (interaction.channelId !== GAMLE_CHANNEL_ID) {
-      setTimeout(async () => {
-        try {
-          await interaction.deleteReply();
-        } catch (error) {}
-      }, 15000);
-    }
   },
 };

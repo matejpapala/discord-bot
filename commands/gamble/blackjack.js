@@ -160,6 +160,7 @@ module.exports = {
 
     const collector = response.createMessageComponentCollector({
       componentType: ComponentType.Button,
+      filter: (i) => i.user.id === userId,
       time: 60000,
     });
 

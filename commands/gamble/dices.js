@@ -51,7 +51,10 @@ module.exports = {
 
     const response = await interaction.editReply({ embeds: [dicesEmbed], components: [row] });
 
-    const collector = response.createMessageComponentCollector({ time: 60000 });
+    const collector = response.createMessageComponentCollector({
+      filter: (i) => i.user.id === userId,
+      time: 60000,
+    });
 
     collector.on("collect", async (i) => {
       const diceOne = Math.floor(Math.random() * 6) + 1;

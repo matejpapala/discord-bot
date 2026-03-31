@@ -1,7 +1,6 @@
 const db = require("../../database.js");
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags } = require("discord.js");
-
-const GAMLE_CHANNEL_ID = "1486436223189782568"; 
+const { GAMBLE_CHANNEL_ID } = require("../../constants.js");
 
 module.exports = {
   data: {
@@ -69,7 +68,7 @@ module.exports = {
       if (win > 0) {
         db.prepare("UPDATE users SET balance = balance + ?, total_gambled = total_gambled + ? WHERE user_id = ?").run(win, win, userId);
         winText = `**!!VYHRA!!** ${interaction.user} vyhrava **${win}** minci`;
-        
+
         const currentBiggest = user.biggest_win || 0;
         if (win > currentBiggest) {
           db.prepare("UPDATE users SET biggest_win = ? WHERE user_id = ?").run(win, userId);
@@ -92,7 +91,7 @@ module.exports = {
 
       const finalMessage = await interaction.channel.send({ embeds: [resultEmbed] });
 
-      if (interaction.channelId !== GAMLE_CHANNEL_ID) {
+      if (interaction.channelId !== GAMBLE_CHANNEL_ID) {
         setTimeout(async () => {
           try {
             await finalMessage.delete();

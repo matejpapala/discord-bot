@@ -1,7 +1,7 @@
 const db = require("../../database.js");
 const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, ComponentType, MessageFlags } = require("discord.js");
 
-const GAMLE_CHANNEL_ID = "1486436223189782568";
+const { GAMBLE_CHANNEL_ID } = require("../../constants.js");
 
 function createDeck() {
   const suits = ["♠️", "♥️", "♦️", "♣️"];
@@ -121,7 +121,7 @@ module.exports = {
 
       await interaction.editReply({ embeds: [instantEmbed] });
 
-      if (interaction.channelId !== GAMLE_CHANNEL_ID) {
+      if (interaction.channelId !== GAMBLE_CHANNEL_ID) {
         setTimeout(async () => {
           try {
             await interaction.deleteReply();
@@ -266,7 +266,7 @@ module.exports = {
 
       const finalMessage = await interaction.channel.send({ embeds: [resultEmbed] });
 
-      if (interaction.channelId !== GAMLE_CHANNEL_ID) {
+      if (interaction.channelId !== GAMBLE_CHANNEL_ID) {
         setTimeout(async () => {
           try {
             await finalMessage.delete();

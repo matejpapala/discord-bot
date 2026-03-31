@@ -1,0 +1,3 @@
+const GAMBLE_CHANNEL_ID = "1486436223189782568";
+
+module.exports = { GAMBLE_CHANNEL_ID };

@@ -1,5 +1,6 @@
 const db = require("../../database.js");
 const { EmbedBuilder, MessageFlags } = require("discord.js");
+const { GAMBLE_CHANNEL_ID } = require("../../constants.js");
 
 const symbolMap = {
   0: "🍒",
@@ -90,7 +91,7 @@ module.exports = {
 
     await interaction.editReply({ embeds: [finalEmbed] });
 
-    if (interaction.channelId !== GAMLE_CHANNEL_ID) {
+    if (interaction.channelId !== GAMBLE_CHANNEL_ID) {
       setTimeout(async () => {
         try {
           await interaction.deleteReply();

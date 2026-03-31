@@ -14,7 +14,8 @@ Czech Discord bot built with Node.js (CommonJS) and discord.js v14.
 
 ```
 index.js          — Entry point, command loader, cron jobs
-database.js       — SQLite setup (better-sqlite3), schema definitions
+database.js       — SQLite setup (better-sqlite3), schema definitions'
+constants.js      — Constants for use in project
 commands/
   economy/        — balance, daily
   fun/            — sayHi, sayGoodnight, sendImage

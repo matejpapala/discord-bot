@@ -25,16 +25,74 @@ module.exports = {
         let playerCount = interaction.options.getInteger('hracu');
 
         const knownGames = {
+            // League of Legends
             'league of legends': { name: 'League of Legends', players: 5 },
+            'league': { name: 'League of Legends', players: 5 },
             'lol': { name: 'League of Legends', players: 5 },
             'lolko': { name: 'League of Legends', players: 5 },
+            // Valorant
             'valorant': { name: 'Valorant', players: 5 },
             'valo': { name: 'Valorant', players: 5 },
+            // Counter-Strike 2
+            'counter-strike 2': { name: 'Counter-Strike 2', players: 5 },
+            'counter strike 2': { name: 'Counter-Strike 2', players: 5 },
             'cs2': { name: 'Counter-Strike 2', players: 5 },
+            'cs': { name: 'Counter-Strike 2', players: 5 },
+            'csko': { name: 'Counter-Strike 2', players: 5 },
+            // Rainbow Six Siege
             'rainbow six siege': { name: 'Rainbow Six Siege', players: 5 },
+            'rainbow six': { name: 'Rainbow Six Siege', players: 5 },
             'r6': { name: 'Rainbow Six Siege', players: 5 },
-            'tft': { name: 'Teamfight Tactics', players: 3 },
+            'siege': { name: 'Rainbow Six Siege', players: 5 },
+            // Teamfight Tactics
             'teamfight tactics': { name: 'Teamfight Tactics', players: 3 },
+            'tft': { name: 'Teamfight Tactics', players: 3 },
+            // Apex Legends
+            'apex legends': { name: 'Apex Legends', players: 3 },
+            'apex': { name: 'Apex Legends', players: 3 },
+            // Fortnite
+            'fortnite': { name: 'Fortnite', players: 4 },
+            'forte': { name: 'Fortnite', players: 4 },
+            'fn': { name: 'Fortnite', players: 4 },
+            // Rocket League
+            'rocket league': { name: 'Rocket League', players: 3 },
+            'rl': { name: 'Rocket League', players: 3 },
+            'rocket': { name: 'Rocket League', players: 3 },
+            // Overwatch 2
+            'overwatch 2': { name: 'Overwatch 2', players: 5 },
+            'overwatch': { name: 'Overwatch 2', players: 5 },
+            'ow': { name: 'Overwatch 2', players: 5 },
+            'ow2': { name: 'Overwatch 2', players: 5 },
+            // Minecraft
+            'minecraft': { name: 'Minecraft', players: 4 },
+            'mc': { name: 'Minecraft', players: 4 },
+            'mine': { name: 'Minecraft', players: 4 },
+            // Dead by Daylight
+            'dead by daylight': { name: 'Dead by Daylight', players: 4 },
+            'dbd': { name: 'Dead by Daylight', players: 4 },
+            // PUBG
+            'pubg': { name: 'PUBG', players: 4 },
+            // Dota 2
+            'dota 2': { name: 'Dota 2', players: 5 },
+            'dota': { name: 'Dota 2', players: 5 },
+            // Lethal Company
+            'lethal company': { name: 'Lethal Company', players: 4 },
+            'lethal': { name: 'Lethal Company', players: 4 },
+            // Phasmophobia
+            'phasmophobia': { name: 'Phasmophobia', players: 4 },
+            'phasmo': { name: 'Phasmophobia', players: 4 },
+            // Among Us
+            'among us': { name: 'Among Us', players: 10 },
+            'amogus': { name: 'Among Us', players: 10 },
+            // GTA V / GTA Online
+            'gta': { name: 'GTA Online', players: 4 },
+            'gta v': { name: 'GTA Online', players: 4 },
+            'gta online': { name: 'GTA Online', players: 4 },
+            // Call of Duty: Warzone
+            'warzone': { name: 'Call of Duty: Warzone', players: 4 },
+            'wz': { name: 'Call of Duty: Warzone', players: 4 },
+            'cod': { name: 'Call of Duty: Warzone', players: 4 },
+            // Test
             'test': { name: 'Testovaci hra', players: 2 }
         };
 

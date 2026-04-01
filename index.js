@@ -6,6 +6,7 @@ const fs = require("fs");
 const path = require("path");
 // eslint-disable-next-line no-unused-vars
 const db = require("./database.js");
+const { GENERAL_CHANNEL_ID } = require("./constants.js");
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds],
@@ -44,16 +45,32 @@ client.once("clientReady", async () => {
     console.error("Error registering commands:", error);
   }
 
-  cron.schedule("0 0 1 * *", async () => {
+  const resetMonthlyStats = async () => {
+    const now = new Date();
+    const currentMonth = `${now.getFullYear()}-${now.getMonth() + 1}`;
+    const lastReset = db.prepare("SELECT value FROM metadata WHERE key = 'last_monthly_reset'").get();
+
+    if (lastReset && lastReset.value === currentMonth) return;
+
     const winner = db.prepare("SELECT user_id, total_gambled FROM users WHERE total_gambled > 0 ORDER BY total_gambled DESC LIMIT 1").get();
 
     if (winner) {
       db.prepare("UPDATE users SET months_won = months_won + 1 WHERE user_id = ?").run(winner.user_id);
       console.log(`Vyhercem mesice je ${winner.user_id} s celkovou vyhrou ${winner.total_gambled} minci!`);
+
+      const channel = await client.channels.fetch(GENERAL_CHANNEL_ID);
+      if (channel) {
+        await channel.send(`🏆 Vyhercem minuleho mesice je <@${winner.user_id}> s celkovym progamblenenim **${winner.total_gambled}** minci!`);
+      }
     }
 
     db.prepare("UPDATE users SET total_gambled = 0").run();
+    db.prepare("INSERT OR REPLACE INTO metadata (key, value) VALUES ('last_monthly_reset', ?)").run(currentMonth);
     console.log("Statistika total_gambled byla vynulovana.");
+  };
+
+  cron.schedule("0 * 1 * *", resetMonthlyStats, {
+    timezone: "Europe/Prague",
   });
 });
 

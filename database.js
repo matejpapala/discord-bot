@@ -25,6 +25,13 @@ db.exec(`
     )
 `);
 
+db.exec(`
+    CREATE TABLE IF NOT EXISTS metadata (
+        key TEXT PRIMARY KEY,
+        value TEXT
+    )
+`);
+
 console.log("Database ready");
 
 module.exports = db;

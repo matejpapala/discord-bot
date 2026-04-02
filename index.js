@@ -4,9 +4,9 @@ const cron = require("node-cron");
 
 const fs = require("fs");
 const path = require("path");
-// eslint-disable-next-line no-unused-vars
 const db = require("./database.js");
 const { GENERAL_CHANNEL_ID } = require("./constants.js");
+const checkWishlistDeals = require("./cron/wishlistCheck.js");
 
 const client = new Client({
   intents: [GatewayIntentBits.Guilds],
@@ -70,6 +70,10 @@ client.once("clientReady", async () => {
   };
 
   cron.schedule("0 * 1 * *", resetMonthlyStats, {
+    timezone: "Europe/Prague",
+  });
+
+  cron.schedule("0 10 * * *", () => checkWishlistDeals(client), {
     timezone: "Europe/Prague",
   });
 });

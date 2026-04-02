@@ -32,6 +32,26 @@ db.exec(`
     )
 `);
 
+db.exec(`
+    CREATE TABLE IF NOT EXISTS wishlist_games (
+        game_id TEXT PRIMARY KEY,
+        title TEXT NOT NULL,
+        thumb TEXT,
+        added_by TEXT NOT NULL,
+        added_at INTEGER NOT NULL DEFAULT (unixepoch())
+    )
+`);
+
+db.exec(`
+    CREATE TABLE IF NOT EXISTS wishlist_notifications (
+        game_id TEXT NOT NULL,
+        deal_id TEXT NOT NULL,
+        notified_at INTEGER NOT NULL DEFAULT (unixepoch()),
+        price TEXT NOT NULL,
+        PRIMARY KEY (game_id, deal_id)
+    )
+`);
+
 console.log("Database ready");
 
 module.exports = db;

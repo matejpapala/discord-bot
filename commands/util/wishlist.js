@@ -30,7 +30,9 @@ module.exports = {
         const data = await res.json();
 
         if (data && data.deals && data.deals.length > 0) {
-          const bestDeal = data.deals[0];
+          const bestPrice = data.deals[0].price;
+          const bestDeal = data.deals.find((d) => d.price === bestPrice && d.storeID === "1")
+            || data.deals[0];
           const savings = parseFloat(bestDeal.savings).toFixed(0);
           const dealLink = `https://www.cheapshark.com/redirect?dealID=${bestDeal.dealID}`;
 

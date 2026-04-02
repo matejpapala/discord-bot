@@ -60,6 +60,7 @@ async function checkWishlistDeals(client) {
           price: deal.price,
           retailPrice: deal.retailPrice,
           savings: savings.toFixed(0),
+          storeId: deal.storeID,
           storeName: stores[deal.storeID] || "Neznamy obchod",
         });
       }
@@ -72,10 +73,15 @@ async function checkWishlistDeals(client) {
 
   if (newDeals.length === 0) return;
 
-  // Group deals by game, pick best deal per game
+  // Group deals by game, pick best deal per game (prefer Steam at same price)
   const bestByGame = {};
   for (const deal of newDeals) {
-    if (!bestByGame[deal.gameId] || parseFloat(deal.price) < parseFloat(bestByGame[deal.gameId].price)) {
+    const current = bestByGame[deal.gameId];
+    if (!current) {
+      bestByGame[deal.gameId] = deal;
+    } else if (parseFloat(deal.price) < parseFloat(current.price)) {
+      bestByGame[deal.gameId] = deal;
+    } else if (deal.price === current.price && deal.storeId === "1") {
       bestByGame[deal.gameId] = deal;
     }
   }

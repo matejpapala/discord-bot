@@ -107,9 +107,8 @@ module.exports = {
 
     collector.on("end", async (collected, reason) => {
       if (reason === "time") {
-        db.prepare("UPDATE users SET balance = balance + ? WHERE user_id = ?").run(bet, userId);
         await interaction.deleteReply();
-        await interaction.followUp({ content: "Dlouho ses nerozhodl, sazka se vraci.", flags: MessageFlags.Ephemeral });
+        await interaction.followUp({ content: "Dlouho ses nerozhodl", flags: MessageFlags.Ephemeral });
       }
     });
   },

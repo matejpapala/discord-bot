@@ -198,10 +198,9 @@ module.exports = {
 
     collector.on("end", async (collected, reason) => {
       if (reason === "time") {
-        db.prepare("UPDATE users SET balance = balance + ? WHERE user_id = ?").run(bet, userId);
         await interaction.deleteReply();
         return await interaction.followUp({
-          content: "Dlouho ses nerozhodl, sazka se ti vraci",
+          content: "Dlouho ses nerozhodl",
           flags: MessageFlags.Ephemeral,
         });
       }

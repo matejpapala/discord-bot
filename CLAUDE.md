@@ -2,6 +2,8 @@
 
 Czech Discord bot built with Node.js (CommonJS) and discord.js v14.
 
+**Important: Whenever a new command or feature is added to the bot, update `README.md` to document it (command list, features section, and project structure as relevant).**
+
 ## Running
 
 - Bot runs via **pm2** on a Raspberry Pi
